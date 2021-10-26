@@ -79,7 +79,7 @@ def depthFirstSearch(problem):
 
     #Each successor is a tuple, first argument is the state and the second one is the action
     stack = util.Stack()
-    start = problem.getStartState
+    start = problem.getStartState()
     state = start #to use it in while loop
     stack.push((start, []))
     path = []
