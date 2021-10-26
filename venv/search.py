@@ -73,18 +73,22 @@ def tinyMazeSearch(problem):
     return  [s, s, w, s, w, w, s, w]
 
 def depthFirstSearch(problem):
-    print("Start:", problem.getStartState())
-    print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
-    print("Start's successors:", problem.getSuccessors(problem.getStartState()))
+    #print("Start:", problem.getStartState())
+    #print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
+    #print("Start's successors:", problem.getSuccessors(problem.getStartState()))
 
     start = problem.getStartState
-    visited = util.stack
-    visited.push(start)
-    
+    stack = util.stack
+    stack.push(start)
+    path = []
+    while not visited.isEmpty() :
+        node = visited.pop()
+        if node not in path: #make sure it's not already visited
+            path.append(node)
+            for adj in problem.getSuccessors(node):
+                stack.push(adj)
 
-
-
-
+    print(path)
     # util.raiseNotDefined()
 
 def breadthFirstSearch(problem):
