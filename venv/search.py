@@ -83,19 +83,22 @@ def depthFirstSearch(problem):
     state = start #to use it in while loop
     stack.push((start, []))
     path = []
-    while not stack.isEmpty():
-        if not problem.isGoalState(state):
+    while not stack.isEmpty() and not problem.isGoalState(state):
+        #print(problem.isGoalState(state))
             s, action = stack.pop()
+            #print("\n", action)
             path.append(s)
-            suc = []
-            suc = problem.getSuccessors(s)
-            for adj in suc:
+            #print("processing: ", s)
+            for adj in problem.getSuccessors(s):
                 place = adj[0]
-                if place not in path: #make sure it's not already visited
+                if not place in path: #make sure it's not already visited
                     dir = adj[1]
-                    state = adj[0]
-                    stack.push( (state, action + [dir] ))
-        return action + [dir]
+                    state = place
+                    #print("dir: \n",dir)
+                    #print("state: \n",place)
+                    stack.push( (place, action + [dir] )) #everytime it appends the new actionpython pacman.py -l tinyMaze -p SearchAgent
+    print(action)
+    return action + [dir]
     #util.raiseNotDefined()
 
 def breadthFirstSearch(problem):
