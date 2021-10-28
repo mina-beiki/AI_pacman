@@ -96,20 +96,61 @@ def depthFirstSearch(problem):
                     state = place
                     #print("dir: \n",dir)
                     #print("state: \n",place)
-                    stack.push( (place, action + [dir] )) #everytime it appends the new actionpython pacman.py -l tinyMaze -p SearchAgent
+                    stack.push( (place, action + [dir] )) #everytime it appends the new action
     print(action)
     return action + [dir]
     #util.raiseNotDefined()
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    # Each successor is a tuple, first argument is the state and the second one is the action
+    queue = util.Queue()
+    start = problem.getStartState()
+    state = start  # to use it in while loop
+    queue.push((start, []))
+    path = []
+    while not queue.isEmpty() and not problem.isGoalState(state):
+        s, action = queue.pop()
+        # print("\n", action)
+        path.append(s)
+        # print("processing: ", s)
+        for adj in problem.getSuccessors(s):
+            place = adj[0]
+            if not place in path:  # make sure it's not visited
+                dir = adj[1]
+                state = place
+                # print("dir: \n",dir)
+                # print("state: \n",place)
+                queue.push((place, action + [dir]))  # everytime it appends the new action
+    print(action)
+    return action + [dir]
+    #util.raiseNotDefined()
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    # Each successor is a tuple, first argument is the state and the second one is the action
+    queue = util.PriorityQueue()
+    start = problem.getStartState()
+    state = start  # to use it in while loop
+    queue.push((start, []), 0)
+    path = []
+    while not queue.isEmpty() and not problem.isGoalState(state):
+        s, action = queue.pop()
+        # print("\n", action)
+        path.append(s)
+        # print("processing: ", s)
+        for adj in problem.getSuccessors(s):
+            place = adj[0]
+            if not place in path:  # make sure it's not visited
+                dir = adj[1]
+                state = place
+                # print("dir: \n",dir)
+                # print("state: \n",place)
+                queue.push((place, action + [dir]), problem.getCostOfActions(action) )  # everytime it appends the new action
+    print(action)
+    return action + [dir]
+    # util.raiseNotDefined()
 
 def nullHeuristic(state, problem=None):
     """
