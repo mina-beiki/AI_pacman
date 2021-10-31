@@ -412,13 +412,13 @@ def cornersHeuristic(state, problem):
     corners = problem.corners  # These are the corner coordinates
     walls = problem.walls  # These are the walls of the maze, as a Grid (game.py)
 
-    cornerDistances = []  # if it's zero, it maens that it is visited
+    cornerDistances = []
     cornerStates = state[1]
     currLocation = state[0]
     unvisitedCorners = []
     cost = 0
     counter = 0
-    top, right = problem.walls.height-2, problem.walls.width-2
+    top, right = problem.walls.height-2, problem.walls.width-2 #top and right location of map
     #first we want to find the unvisited corners:
     for cornerState in cornerStates:
         if not cornerState:
@@ -440,9 +440,9 @@ def cornersHeuristic(state, problem):
     while len(unvisitedCorners) > 0:
         for corner in unvisitedCorners:
             cornerDistances.append(util.manhattanDistance(corner, currLocation))
-            minDistance = min(cornerDistances)
-            cost += minDistance
-            unvisitedCorners.remove(corner)
+        minDistance = min(cornerDistances)
+        cost += minDistance
+        unvisitedCorners.remove(corner)
 
     return cost
 
@@ -544,8 +544,29 @@ def foodHeuristic(state, problem):
     problem.heuristicInfo['wallCount']
     """
     position, foodGrid = state
-    "*** YOUR CODE HERE ***"
-    return 0
+    #first, we find the real distance between two furthest fruits:
+    dotPlaces = foodGrid.asList()
+    currPosition = state[0]
+    dotDistances = []
+    counter = 0
+    for dot in dotPlaces:
+        dist = mazeDistance(dot, currPosition, state)
+        dotDistances.append(dist)
+    minIndex = dotDistances.index(min(dotDistances))
+    furthestDot1 = foodGrid.asList[minIndex]
+    dotPlaces.remove(min(dotDistances))
+    for dot in dotPlaces:
+        dist = mazeDistance(dot, currPosition, state)
+        dotDistances.append(dist)
+    minIndex = dotDistances.index(min(dotDistances))
+    furthestDot2 = foodGrid.asList[minIndex]
+
+    x = mazeDistance(furthestDot1, furthestDot2, state)
+    y = mazeDistance(currPosition, furthestDot1, state)
+
+    cost = x + y
+
+    return cost
 
 
 class ClosestDotSearchAgent(SearchAgent):
@@ -577,8 +598,10 @@ class ClosestDotSearchAgent(SearchAgent):
         walls = gameState.getWalls()
         problem = AnyFoodSearchProblem(gameState)
 
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        #since we want the shortest path to food in each stage, so we should use bfs as our
+        #search strategy
+        return search.breadthFirstSearch(problem)
+        #util.raiseNotDefined()
 
 
 class AnyFoodSearchProblem(PositionSearchProblem):
@@ -614,8 +637,11 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         """
         x, y = state
 
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+
+        #we want the shortest path to food, so we should check
+        #if this state is a food or not
+        return self.food[x][y]
+        #util.raiseNotDefined()
 
 
 def mazeDistance(point1, point2, gameState):
