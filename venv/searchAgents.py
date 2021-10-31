@@ -415,13 +415,23 @@ def cornersHeuristic(state, problem):
     cornerDistances = []  # if it's zero, it maens that it is visited
     cornerStates = state[1]
     currLocation = state[0]
-    cornerLocation = (0, 0)
     unvisitedCorners = []
     cost = 0
+    counter = 0
+    top, right = problem.walls.height-2, problem.walls.width-2
     #first we want to find the unvisited corners:
     for cornerState in cornerStates:
         if not cornerState:
-            unvisitedCorners.append(cornerState)
+            if counter == 0:
+                cornerLocation = (right, 1)
+            if counter == 1:
+                cornerLocation = (right, top)
+            if counter == 2:
+                cornerLocation = (1, top)
+            if counter == 3:
+                cornerLocation = (1, 1)
+            unvisitedCorners.append(cornerLocation)
+        counter += 1
 
 
     # now we find the minimum of distances, then we assume we have reached that corner, we omit
@@ -430,9 +440,9 @@ def cornersHeuristic(state, problem):
     while len(unvisitedCorners) > 0:
         for corner in unvisitedCorners:
             cornerDistances.append(util.manhattanDistance(corner, currLocation))
-        minDistance = min(cornerDistances)
-        cost += minDistance
-        unvisitedCorners.remove(corner)
+            minDistance = min(cornerDistances)
+            cost += minDistance
+            unvisitedCorners.remove(corner)
 
     return cost
 
