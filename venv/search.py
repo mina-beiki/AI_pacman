@@ -109,22 +109,25 @@ def breadthFirstSearch(problem):
     state = start  # to use it in while loop
     queue.push((start, []))
     visited = []
+    visited.append(start)
     while not queue.isEmpty() :
         s, action = queue.pop()
-        visited.append(s)
-        if problem.isGoalState(state):
+        if problem.isGoalState(s):
+            #print("goal!")
+            #print(action)
             return action
         # print("\n", action)
         # print("processing: ", s)
         for adj in problem.getSuccessors(s):
             place = adj[0]
             if not place in visited:  # make sure it's not visited
+                visited.append(place)
+                print("visited = ", visited)
                 dir = adj[1]
                 state = place
-                # print("dir: \n",dir)
-                # print("state: \n",place)
+                print("dir: ",dir)
+                print("\nstate: ",place)
                 queue.push((place, action + [dir]))  # everytime it appends the new action
-    print(action)
     return action
     #util.raiseNotDefined()
 
@@ -136,11 +139,13 @@ def uniformCostSearch(problem):
     state = start  # to use it in while loop
     queue.push((start, []), 0)
     visited = []
-    while not queue.isEmpty() and not problem.isGoalState(state):
+    while not queue.isEmpty() :
         s, action = queue.pop()
         # print("\n", action)
         visited.append(s)
         # print("processing: ", s)
+        if problem.isGoalState(state):
+            return action
         for adj in problem.getSuccessors(s):
             place = adj[0]
             if not place in visited:  # make sure it's not visited
@@ -150,7 +155,7 @@ def uniformCostSearch(problem):
                 # print("state: \n",place)
                 queue.push((place, action + [dir]), problem.getCostOfActions(action + [dir] ) )  # everytime it appends the new action
     print(action)
-    return action + [dir]
+    return action
     # util.raiseNotDefined()
 
 def nullHeuristic(state, problem=None):

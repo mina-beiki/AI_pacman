@@ -287,22 +287,50 @@ class CornersProblem(search.SearchProblem):
         self._expanded = 0 # DO NOT CHANGE; Number of search nodes expanded
         # Please add any code here which you would like to use
         # in initializing the problem
-        "*** YOUR CODE HERE ***"
+
+        #added codes:
+
+
+
 
     def getStartState(self):
         """
         Returns the start state (in your state space, not the full Pacman state
         space)
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        cornerStates = []
+        cornerStates[0] = false
+        cornerStates[1] = false
+        cornerStates[2] = false
+        cornerStates[3] = false
+
+        #to save the state for corners, we add corners' value too.
+        startState = (self.startingPosition, cornerStates)
+
+        return startState
+        #util.raiseNotDefined()
 
     def isGoalState(self, state):
         """
         Returns whether this search state is a goal state of the problem.
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        cornerStates = state[1]
+        if cornerStates[0] and cornerStates[1]:
+            if cornerStates[2] and cornerStates[3]:
+                isGoal = true
+            else:
+                isGoal = false
+
+        # For display purposes only
+        if isGoal and self.visualize:
+            self._visitedlist.append(state)
+            import __main__
+            if '_display' in dir(__main__):
+                if 'drawExpandedCells' in dir(__main__._display): #@UndefinedVariable
+                    __main__._display.drawExpandedCells(self._visitedlist) #@UndefinedVariable
+
+        return isGoal
+        #util.raiseNotDefined()
 
     def getSuccessors(self, state):
         """
@@ -319,12 +347,40 @@ class CornersProblem(search.SearchProblem):
         for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
             # Add a successor state to the successor list if the action is legal
             # Here's a code snippet for figuring out whether a new position hits a wall:
-            #   x,y = currentPosition
-            #   dx, dy = Actions.directionToVector(action)
-            #   nextx, nexty = int(x + dx), int(y + dy)
-            #   hitsWall = self.walls[nextx][nexty]
-
-            "*** YOUR CODE HERE ***"
+            x,y = currentPosition
+            dx, dy = Actions.directionToVector(action)
+            nextx, nexty = int(x + dx), int(y + dy)
+            nextLocation = (nextx, nexty)
+            hitsWall = self.walls[nextx][nexty]
+            newCornerStates = []
+            oldCornerStates = []
+            #if we are not hitting walls then there might be a chance that one of
+            # our successors is a corner, so we should check:
+            if not hitsWall:
+                if nextLocation == (1,1):
+                    newCornerStates[0] = true
+                    newCornerStates[1] = oldCornerStates[1]
+                    newCornerStates[2] = oldCornerStates[2]
+                    newCornerStates[3] = oldCornerStates[3]
+                elif nextLocation == (1,top):
+                    newCornerStates[0] = oldCornerStates[0]
+                    newCornerStates[1] = true
+                    newCornerStates[2] = oldCornerStates[2]
+                    newCornerStates[3] = oldCornerStates[3]
+                elif nextLocation == (right, 1):
+                    newCornerStates[0] = oldCornerStates[0]
+                    newCornerStates[1] = oldCornerStates[1]
+                    newCornerStates[2] = true
+                    newCornerStates[3] = oldCornerStates[3]
+                elif nextLocation == (right, top):
+                    newCornerStates[0] = oldCornerStates[0]
+                    newCornerStates[1] = oldCornerStates[1]
+                    newCornerStates[2] = oldCornerStates[2]
+                    newCornerStates[3] = true
+                successor = ( (nextLocation, newCornerStates), action, 1)
+            else:
+                successor = ( (nextLocation, oldCornerStates), action, 1)
+            successors.append(successor)
 
         self._expanded += 1 # DO NOT CHANGE
         return successors
