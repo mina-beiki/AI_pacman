@@ -108,17 +108,17 @@ def breadthFirstSearch(problem):
     start = problem.getStartState()
     state = start  # to use it in while loop
     queue.push((start, []))
-    path = []
+    visited = []
     while not queue.isEmpty() :
         s, action = queue.pop()
-        path.append(s)
+        visited.append(s)
         if problem.isGoalState(state):
             return action
         # print("\n", action)
         # print("processing: ", s)
         for adj in problem.getSuccessors(s):
             place = adj[0]
-            if not place in path:  # make sure it's not visited
+            if not place in visited:  # make sure it's not visited
                 dir = adj[1]
                 state = place
                 # print("dir: \n",dir)
@@ -162,8 +162,29 @@ def nullHeuristic(state, problem=None):
 
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    queue = util.PriorityQueue()
+    start = problem.getStartState()
+    state = start  # to use it in while loop
+    queue.push((start, []), 0 + heuristic(start, problem))
+    visited = []
+    while not queue.isEmpty() :
+        s, action = queue.pop()
+        # print("\n", action)
+        visited.append(s)
+        # print("processing: ", s)
+        if problem.isGoalState(state):
+            return action
+        for adj in problem.getSuccessors(s):
+            place = adj[0]
+            if not place in visited:  # make sure it's not visited
+                dir = adj[1]
+                state = place
+                # print("dir: \n",dir)
+                # print("state: \n",place)
+                queue.push((place, action + [dir]), heuristic(place, problem) + problem.getCostOfActions(action + [dir] ) )  # f = h + g
+    print(action)
+    return action
+    # util.raiseNotDefined()
 
 
 # Abbreviations
