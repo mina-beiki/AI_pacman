@@ -122,11 +122,11 @@ def breadthFirstSearch(problem):
             place = adj[0]
             if not place in visited:  # make sure it's not visited
                 visited.append(place)
-                print("visited = ", visited)
+                #print("visited = ", visited)
                 dir = adj[1]
                 state = place
-                print("dir: ",dir)
-                print("\nstate: ",place)
+                #print("dir: ",dir)
+                #print("\nstate: ",place)
                 queue.push((place, action + [dir]))  # everytime it appends the new action
     return action
     #util.raiseNotDefined()
@@ -142,18 +142,20 @@ def uniformCostSearch(problem):
     while not queue.isEmpty() :
         s, action = queue.pop()
         # print("\n", action)
-        visited.append(s)
         # print("processing: ", s)
-        if problem.isGoalState(state):
+        if problem.isGoalState(s):
             return action
-        for adj in problem.getSuccessors(s):
-            place = adj[0]
-            if not place in visited:  # make sure it's not visited
-                dir = adj[1]
-                state = place
-                # print("dir: \n",dir)
-                # print("state: \n",place)
-                queue.push((place, action + [dir]), problem.getCostOfActions(action + [dir] ) )  # everytime it appends the new action
+        #if we don't put this if here, we will have many repeated nodes.
+        if s not in visited:
+            for adj in problem.getSuccessors(s):
+                place = adj[0]
+                if place not in visited:  # make sure it's not visited
+                    dir = adj[1]
+                    state = place
+                    # print("dir: \n",dir)
+                    # print("state: \n",place)
+                    queue.push((place, action + [dir]), problem.getCostOfActions(action + [dir] ) )  # everytime it appends the new action
+        visited.append(s)
     print(action)
     return action
     # util.raiseNotDefined()
@@ -175,18 +177,20 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     while not queue.isEmpty() :
         s, action = queue.pop()
         # print("\n", action)
-        visited.append(s)
         # print("processing: ", s)
-        if problem.isGoalState(state):
+        if problem.isGoalState(s):
             return action
-        for adj in problem.getSuccessors(s):
-            place = adj[0]
-            if not place in visited:  # make sure it's not visited
-                dir = adj[1]
-                state = place
-                # print("dir: \n",dir)
-                # print("state: \n",place)
-                queue.push((place, action + [dir]), heuristic(place, problem) + problem.getCostOfActions(action + [dir] ) )  # f = h + g
+        #if we don't put this if here, we will have many repeated nodes.
+        if s not in visited:
+            for adj in problem.getSuccessors(s):
+                place = adj[0]
+                if not place in visited:  # make sure it's not visited
+                    dir = adj[1]
+                    state = place
+                    # print("dir: \n",dir)
+                    # print("state: \n",place)
+                    queue.push((place, action + [dir]), heuristic(place, problem) + problem.getCostOfActions(action + [dir] ) )  # f = h + g
+        visited.append(s)
     print(action)
     return action
     # util.raiseNotDefined()
