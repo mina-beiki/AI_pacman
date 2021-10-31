@@ -109,10 +109,12 @@ def breadthFirstSearch(problem):
     state = start  # to use it in while loop
     queue.push((start, []))
     path = []
-    while not queue.isEmpty() and not problem.isGoalState(state):
+    while not queue.isEmpty() :
         s, action = queue.pop()
-        # print("\n", action)
         path.append(s)
+        if problem.isGoalState(state):
+            return action
+        # print("\n", action)
         # print("processing: ", s)
         for adj in problem.getSuccessors(s):
             place = adj[0]
@@ -123,31 +125,30 @@ def breadthFirstSearch(problem):
                 # print("state: \n",place)
                 queue.push((place, action + [dir]))  # everytime it appends the new action
     print(action)
-    return action + [dir]
+    return action
     #util.raiseNotDefined()
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
-    "*** YOUR CODE HERE ***"
     # Each successor is a tuple, first argument is the state and the second one is the action
     queue = util.PriorityQueue()
     start = problem.getStartState()
     state = start  # to use it in while loop
     queue.push((start, []), 0)
-    path = []
+    visited = []
     while not queue.isEmpty() and not problem.isGoalState(state):
         s, action = queue.pop()
         # print("\n", action)
-        path.append(s)
+        visited.append(s)
         # print("processing: ", s)
         for adj in problem.getSuccessors(s):
             place = adj[0]
-            if not place in path:  # make sure it's not visited
+            if not place in visited:  # make sure it's not visited
                 dir = adj[1]
                 state = place
                 # print("dir: \n",dir)
                 # print("state: \n",place)
-                queue.push((place, action + [dir]), problem.getCostOfActions(action) )  # everytime it appends the new action
+                queue.push((place, action + [dir]), problem.getCostOfActions(action + [dir] ) )  # everytime it appends the new action
     print(action)
     return action + [dir]
     # util.raiseNotDefined()
