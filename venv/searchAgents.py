@@ -412,14 +412,13 @@ def cornersHeuristic(state, problem):
     corners = problem.corners  # These are the corner coordinates
     walls = problem.walls  # These are the walls of the maze, as a Grid (game.py)
 
-    cornerDistances = []
     cornerStates = state[1]
     currLocation = state[0]
     unvisitedCorners = []
     cost = 0
     counter = 0
-    top, right = problem.walls.height-2, problem.walls.width-2 #top and right location of map
-    #first we want to find the unvisited corners:
+    top, right = problem.walls.height - 2, problem.walls.width - 2  # top and right location of map
+    # first we want to find the unvisited corners:
     for cornerState in cornerStates:
         if not cornerState:
             if counter == 0:
@@ -433,16 +432,18 @@ def cornersHeuristic(state, problem):
             unvisitedCorners.append(cornerLocation)
         counter += 1
 
-
     # now we find the minimum of distances, then we assume we have reached that corner, we omit
     # it and do the same thing for the remaining corners:
 
     while len(unvisitedCorners) > 0:
+        cornerDistances = []
         for corner in unvisitedCorners:
-            cornerDistances.append(util.manhattanDistance(corner, currLocation))
+            cornerDistances.append(util.manhattanDistance(currLocation, corner))
         minDistance = min(cornerDistances)
         cost += minDistance
-        unvisitedCorners.remove(corner)
+        index = cornerDistances.index(minDistance)
+        currLocation = unvisitedCorners[index]
+        del unvisitedCorners[index]
 
     return cost
 
@@ -544,27 +545,32 @@ def foodHeuristic(state, problem):
     problem.heuristicInfo['wallCount']
     """
     position, foodGrid = state
-    #first, we find the real distance between two furthest fruits:
+    cost = 0
+    # first, we find the real distance between two furthest fruits:
     dotPlaces = foodGrid.asList()
-    currPosition = state[0]
-    dotDistances = []
-    counter = 0
-    for dot in dotPlaces:
-        dist = mazeDistance(dot, currPosition, state)
-        dotDistances.append(dist)
-    minIndex = dotDistances.index(min(dotDistances))
-    furthestDot1 = foodGrid.asList[minIndex]
-    dotPlaces.remove(min(dotDistances))
-    for dot in dotPlaces:
-        dist = mazeDistance(dot, currPosition, state)
-        dotDistances.append(dist)
-    minIndex = dotDistances.index(min(dotDistances))
-    furthestDot2 = foodGrid.asList[minIndex]
 
-    x = mazeDistance(furthestDot1, furthestDot2, state)
-    y = mazeDistance(currPosition, furthestDot1, state)
-
-    cost = x + y
+    # if there is only one dot:
+    if len(dotPlaces) == 0:
+        cost = 0
+    elif len(dotPlaces) == 1:
+        cost = util.manhattanDistance(position, dotPlaces[0])
+    else:
+        dotDistances1 = []
+        for dot in dotPlaces:
+            dist = util.manhattanDistance(position, dot)
+            dotDistances1.append(dist)
+        minDistance = min(dotDistances1)
+        minIndex = dotDistances1.index(minDistance)
+        nearestDot = dotPlaces[minIndex]
+        dotDistances2 = []
+        cost += util.manhattanDistance(position, nearestDot)
+        for dot in dotPlaces:
+            dist = util.manhattanDistance(nearestDot, dot)
+            dotDistances2.append(dist)
+        maxDistance = max(dotDistances2)
+        maxIndex = dotDistances2.index(maxDistance)
+        furthestDot = dotPlaces[maxIndex]
+        cost += util.manhattanDistance(nearestDot, furthestDot)
 
     return cost
 
@@ -598,10 +604,9 @@ class ClosestDotSearchAgent(SearchAgent):
         walls = gameState.getWalls()
         problem = AnyFoodSearchProblem(gameState)
 
-        #since we want the shortest path to food in each stage, so we should use bfs as our
-        #search strategy
+        # since we want the shortest path to food in each stage, so we should use bfs as our search strategy
         return search.breadthFirstSearch(problem)
-        #util.raiseNotDefined()
+        # util.raiseNotDefined()
 
 
 class AnyFoodSearchProblem(PositionSearchProblem):
@@ -637,11 +642,10 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         """
         x, y = state
 
-
-        #we want the shortest path to food, so we should check
-        #if this state is a food or not
+        # we want the shortest path to food, so we should check
+        # if this state is a food or not
         return self.food[x][y]
-        #util.raiseNotDefined()
+        # util.raiseNotDefined()
 
 
 def mazeDistance(point1, point2, gameState):
